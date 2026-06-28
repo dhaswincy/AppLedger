@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>AppLedger</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root[data-theme="light"] {
+  --bg:#F4F6FA; --surface:#FFFFFF; --surface2:#EEF1F6; --border:#DDE1E9;
+  --text-primary:#0D1117; --text-secondary:#4B5563; --text-muted:#9CA3AF;
+  --accent:#2563EB; --accent-soft:#EFF6FF; --accent-hover:#1D4ED8;
+  --red:#EF4444; --red-soft:#FEF2F2; --green:#10B981; --green-soft:#ECFDF5;
+  --orange:#F59E0B; --orange-soft:#FFFBEB;
+  --shadow:0 1px 3px rgba(0,0,0,.07),0 4px 12px rgba(0,0,0,.05);
+  --shadow-lg:0 8px 30px rgba(0,0,0,.12);
+  --radius:14px; --radius-sm:9px; --gmail:#EA4335;
+}
+:root[data-theme="dark"] {
+  --bg:#0D1117; --surface:#161B22; --surface2:#21262D; --border:#30363D;
+  --text-primary:#E6EDF3; --text-secondary:#8B949E; --text-muted:#484F58;
+  --accent:#58A6FF; --accent-soft:#0D1F3C; --accent-hover:#79B8FF;
+  --red:#F85149; --red-soft:#2D1216; --green:#3FB950; --green-soft:#0F2419;
+  --orange:#F59E0B; --orange-soft:#2D1F00;
+  --shadow:0 1px 3px rgba(0,0,0,.3),0 4px 12px rgba(0,0,0,.2);
+  --shadow-lg:0 8px 30px rgba(0,0,0,.45);
+  --radius:14px; --radius-sm:9px; --gmail:#FF6B6B;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-text-size-adjust:100%}
+body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--text-primary);min-height:100vh;transition:background .2s,color .2s;font-size:14px;line-height:1.5;-webkit-font-smoothing:antialiased}
+
+/* HEADER */
+header{background:var(--surface);border-bottom:1px solid var(--border);padding:0 16px;height:54px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:200;box-shadow:var(--shadow)}
+.logo{display:flex;align-items:center;gap:9px;font-weight:700;font-size:17px;letter-spacing:-.4px;user-select:none}
+.logo-icon{width:30px;height:30px;background:linear-gradient(135deg,#EA4335 40%,#FBBC04 100%);border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0}
+.header-right{display:flex;gap:6px;align-items:center}
+.btn-icon{width:36px;height:36px;border:1px solid var(--border);background:var(--surface2);border-radius:var(--radius-sm);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:16px;color:var(--text-secondary);transition:background .15s;flex-shrink:0}
+.btn-icon:hover{background:var(--border);color:var(--text-primary)}
+
+/* MAIN */
+main{max-width:700px;margin:0 auto;padding:20px 14px 90px}
+
+/* PAGE HEADER */
+.page-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;gap:10px}
+.page-title{font-size:20px;font-weight:700;letter-spacing:-.4px}
+.count-badge{background:var(--accent-soft);color:var(--accent);font-size:11px;font-weight:700;padding:2px 9px;border-radius:20px;margin-left:7px}
+
+/* BUTTONS */
+.btn{display:inline-flex;align-items:center;gap:5px;padding:9px 16px;border-radius:var(--radius-sm);font-size:13px;font-weight:600;font-family:inherit;cursor:pointer;border:none;transition:all .15s;white-space:nowrap}
+.btn-primary{background:var(--accent);color:#fff}
+.btn-primary:hover{background:var(--accent-hover)}
+.btn-secondary{background:var(--surface2);color:var(--text-primary);border:1px solid var(--border)}
+.btn-secondary:hover{background:var(--border)}
+.btn-danger{background:var(--red-soft);color:var(--red);border:1px solid transparent}
+.btn-danger:hover{background:var(--red);color:#fff}
+.btn-sm{padding:6px 11px;font-size:12px}
+
+/* SEARCH */
+.search-wrap{position:relative;margin-bottom:16px}
+.search-wrap input{width:100%;padding:10px 12px 10px 36px;border:1.5px solid var(--border);border-radius:var(--radius-sm);background:var(--surface);color:var(--text-primary);font-family:inherit;font-size:14px;outline:none;transition:border-color .15s}
+.search-wrap input:focus{border-color:var(--accent)}
+.search-icon{position:absolute;left:11px;top:50%;transform:translateY(-50%);color:var(--text-muted);font-size:15px;pointer-events:none}
+
+/* CARD */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:12px;box-shadow:var(--shadow);transition:box-shadow .15s;overflow:hidden}
+.card:hover{box-shadow:var(--shadow-lg)}
+
+/* CARD TOP — stacked layout for phone */
+.card-top{padding:14px 14px 12px;cursor:pointer;user-select:none}
+.card-row1{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.card-sno{font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:600;color:var(--text-muted);background:var(--surface2);border-radius:6px;padding:3px 8px;flex-shrink:0}
+.card-chevron{margin-left:auto;color:var(--text-muted);font-size:12px;transition:transform .2s;flex-shrink:0}
+.card.expanded .card-chevron{transform:rotate(180deg)}
+.card-actions{display:flex;gap:6px;flex-shrink:0}
+
+/* Info grid — 2 columns on all screens */
+.card-info-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px}
+.info-cell{background:var(--surface2);border-radius:var(--radius-sm);padding:8px 10px;min-width:0}
+.info-label{font-size:10px;font-weight:600;color:var(--text-muted);letter-spacing:.6px;text-transform:uppercase;margin-bottom:3px}
+.info-value{font-size:13px;font-weight:600;word-break:break-all;line-height:1.3}
+.info-value.gmail-val{color:var(--gmail)}
+.info-value.app-val{color:var(--text-primary)}
+
+/* Online badge — full width */
+.online-badge{display:flex;align-items:center;gap:7px;background:var(--green-soft);color:var(--green);border-radius:var(--radius-sm);padding:7px 12px;font-size:13px;font-weight:600}
+.online-dot{width:8px;height:8px;border-radius:50%;background:var(--green);animation:pulse 2s infinite;flex-shrink:0}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+
+/* CARD BODY */
+.card-body{display:none;border-top:1px solid var(--border);padding:14px}
+.card.expanded .card-body{display:block}
+
+.files-title{font-size:11px;font-weight:700;color:var(--text-secondary);letter-spacing:.5px;text-transform:uppercase;margin-bottom:10px}
+.files-list{display:flex;flex-direction:column;gap:7px;margin-bottom:10px}
+.file-item{display:flex;align-items:center;gap:9px;padding:9px 11px;background:var(--surface2);border-radius:var(--radius-sm);border:1px solid var(--border)}
+.file-icon{font-size:20px;flex-shrink:0}
+.file-info{flex:1;min-width:0}
+.file-name{font-size:13px;font-weight:500;word-break:break-all;line-height:1.3}
+.file-meta{font-size:11px;color:var(--text-muted);margin-top:2px}
+.file-btns{display:flex;gap:4px;flex-shrink:0}
+.file-btn{width:32px;height:32px;border:none;border-radius:7px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:15px;transition:background .15s;background:none}
+.file-btn.dl{color:var(--accent)}
+.file-btn.dl:hover{background:var(--accent-soft)}
+.file-btn.del{color:var(--red)}
+.file-btn.del:hover{background:var(--red-soft)}
+
+.upload-zone{border:2px dashed var(--border);border-radius:var(--radius-sm);padding:18px;text-align:center;cursor:pointer;transition:border-color .15s,background .15s;color:var(--text-muted);font-size:13px;display:block}
+.upload-zone:hover,.upload-zone.drag-over{border-color:var(--accent);background:var(--accent-soft);color:var(--accent)}
+.upload-zone input{display:none}
+.upload-icon{font-size:22px;margin-bottom:5px}
+
+/* EMPTY */
+.empty-state{text-align:center;padding:56px 20px;color:var(--text-muted)}
+.empty-icon{font-size:44px;margin-bottom:14px;opacity:.45}
+.empty-state h3{font-size:15px;font-weight:600;color:var(--text-secondary);margin-bottom:5px}
+.empty-state p{font-size:13px}
+
+/* MODAL */
+.modal-backdrop{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:300;align-items:flex-end;justify-content:center;backdrop-filter:blur(3px)}
+.modal-backdrop.open{display:flex}
+@media(min-width:520px){.modal-backdrop{align-items:center}}
+.modal{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius) var(--radius) 0 0;width:100%;max-width:500px;box-shadow:var(--shadow-lg);animation:slideUp .22s ease;max-height:92vh;overflow-y:auto}
+@media(min-width:520px){.modal{border-radius:var(--radius);margin:16px}}
+@keyframes slideUp{from{transform:translateY(24px);opacity:0}to{transform:translateY(0);opacity:1}}
+.modal-header{padding:18px 18px 0;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;background:var(--surface);border-bottom:1px solid var(--border);padding-bottom:14px;margin-bottom:0}
+.modal-title{font-size:17px;font-weight:700;letter-spacing:-.3px}
+.modal-close{width:30px;height:30px;background:var(--surface2);border:1px solid var(--border);border-radius:7px;cursor:pointer;font-size:15px;display:flex;align-items:center;justify-content:center;color:var(--text-secondary)}
+.modal-close:hover{background:var(--border)}
+.modal-body{padding:16px 18px}
+.modal-footer{padding:0 18px 20px;display:flex;gap:8px;justify-content:flex-end}
+label.field-label{display:block;font-size:11px;font-weight:700;color:var(--text-secondary);letter-spacing:.5px;text-transform:uppercase;margin-bottom:5px}
+.form-group{margin-bottom:14px}
+input[type="text"],input[type="email"],input[type="number"],select,textarea{width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:var(--radius-sm);background:var(--surface2);color:var(--text-primary);font-family:inherit;font-size:14px;transition:border-color .15s,box-shadow .15s;outline:none}
+input:focus,select:focus,textarea:focus{border-color:var(--accent);box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 12%,transparent)}
+select{cursor:pointer;appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%239CA3AF' d='M6 8L1 3h10z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:32px}
+.time-row{display:grid;grid-template-columns:1fr 100px;gap:10px}
+
+/* SETTINGS PANEL */
+.settings-panel{display:none;position:fixed;inset:0;z-index:250;background:rgba(0,0,0,.5);backdrop-filter:blur(3px);align-items:flex-end;justify-content:center}
+.settings-panel.open{display:flex}
+@media(min-width:520px){.settings-panel{align-items:center}}
+.settings-box{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius) var(--radius) 0 0;width:100%;max-width:460px;box-shadow:var(--shadow-lg);animation:slideUp .22s ease;max-height:90vh;overflow-y:auto}
+@media(min-width:520px){.settings-box{border-radius:var(--radius);margin:16px}}
+.settings-header{padding:18px 18px 14px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);position:sticky;top:0;background:var(--surface)}
+.settings-title{font-size:17px;font-weight:700}
+.settings-body{padding:16px 18px 22px}
+.setting-group{margin-bottom:20px}
+.setting-group-title{font-size:11px;font-weight:700;color:var(--text-muted);letter-spacing:.7px;text-transform:uppercase;margin-bottom:10px}
+.setting-row{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border);gap:12px}
+.setting-row:last-child{border-bottom:none}
+.setting-info{}
+.setting-name{font-size:14px;font-weight:500}
+.setting-desc{font-size:12px;color:var(--text-muted);margin-top:2px}
+/* toggle */
+.toggle{position:relative;width:42px;height:24px;flex-shrink:0}
+.toggle input{opacity:0;width:0;height:0;position:absolute}
+.toggle-track{position:absolute;inset:0;background:var(--border);border-radius:12px;cursor:pointer;transition:background .2s}
+.toggle input:checked+.toggle-track{background:var(--accent)}
+.toggle-track::after{content:'';position:absolute;width:18px;height:18px;border-radius:50%;background:#fff;top:3px;left:3px;transition:transform .2s;box-shadow:0 1px 4px rgba(0,0,0,.2)}
+.toggle input:checked+.toggle-track::after{transform:translateX(18px)}
+.settings-actions{display:flex;flex-direction:column;gap:8px;margin-top:4px}
+
+/* TOAST */
+.toast-container{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);z-index:999;display:flex;flex-direction:column;gap:7px;pointer-events:none;width:calc(100% - 32px);max-width:360px}
+.toast{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);padding:10px 14px;font-size:13px;font-weight:500;box-shadow:var(--shadow-lg);animation:toastIn .2s ease;display:flex;align-items:center;gap:8px}
+@keyframes toastIn{from{transform:translateY(10px);opacity:0}to{transform:translateY(0);opacity:1}}
+.toast.success{border-left:3px solid var(--green)}
+.toast.error{border-left:3px solid var(--red)}
+.toast.info{border-left:3px solid var(--accent)}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">
+    <div class="logo-icon">✉️</div>
+    AppLedger
+  </div>
+  <div class="header-right">
+    <button class="btn-icon" onclick="toggleTheme()" id="themeBtn" title="Toggle theme">🌙</button>
+    <button class="btn-icon" onclick="openSettings()" title="Settings">⚙️</button>
+  </div>
+</header>
+
+<main>
+  <div class="page-header">
+    <div>
+      <span class="page-title">Accounts</span>
+      <span class="count-badge" id="countBadge">0</span>
+    </div>
+    <button class="btn btn-primary" onclick="openAddModal()">＋ Add</button>
+  </div>
+
+  <div class="search-wrap">
+    <span class="search-icon">🔍</span>
+    <input type="text" id="searchInput" placeholder="Search Gmail or App name…" oninput="filterAccounts(this.value)">
+  </div>
+
+  <div id="accountsList"></div>
+</main>
+
+<!-- ADD / EDIT MODAL -->
+<div class="modal-backdrop" id="modal">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title" id="modalTitle">Add Account</span>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label class="field-label">Gmail Address</label>
+        <input type="email" id="fGmail" placeholder="example@gmail.com" autocomplete="off">
+      </div>
+      <div class="form-group">
+        <label class="field-label">Name of the App</label>
+        <input type="text" id="fApp" placeholder="e.g. YouTube, Drive, Sheets…" autocomplete="off">
+      </div>
+      <div class="form-group">
+        <label class="field-label">Online At</label>
+        <div class="time-row">
+          <input type="number" id="fTime" placeholder="Hour  e.g. 5" min="1" max="12">
+          <select id="fAmPm">
+            <option value="AM">AM</option>
+            <option value="PM">PM</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="field-label">Notes (optional)</label>
+        <textarea id="fNotes" rows="2" placeholder="Any extra info…" style="resize:vertical"></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+      <button class="btn btn-primary" onclick="saveAccount()">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- SETTINGS PANEL -->
+<div class="settings-panel" id="settingsPanel">
+  <div class="settings-box">
+    <div class="settings-header">
+      <span class="settings-title">⚙️ Settings</span>
+      <button class="modal-close" onclick="closeSettings()">✕</button>
+    </div>
+    <div class="settings-body">
+
+      <div class="setting-group">
+        <div class="setting-group-title">Appearance</div>
+        <div class="setting-row">
+          <div class="setting-info">
+            <div class="setting-name">Dark Mode</div>
+            <div class="setting-desc">Switch between light and dark theme</div>
+          </div>
+          <label class="toggle">
+            <input type="checkbox" id="settingDark" onchange="toggleThemeFromSettings()">
+            <div class="toggle-track"></div>
+          </label>
+        </div>
+        <div class="setting-row">
+          <div class="setting-info">
+            <div class="setting-name">Compact Cards</div>
+            <div class="setting-desc">Reduce card padding on mobile</div>
+          </div>
+          <label class="toggle">
+            <input type="checkbox" id="settingCompact" onchange="applyCompact()">
+            <div class="toggle-track"></div>
+          </label>
+        </div>
+      </div>
+
+      <div class="setting-group">
+        <div class="setting-group-title">Files</div>
+        <div class="setting-row">
+          <div class="setting-info">
+            <div class="setting-name">Newest File First</div>
+            <div class="setting-desc">Latest uploaded file appears at top</div>
+          </div>
+          <label class="toggle">
+            <input type="checkbox" id="settingNewestFirst" checked onchange="saveSetting('newestFirst',this.checked);render()">
+            <div class="toggle-track"></div>
+          </label>
+        </div>
+        <div class="setting-row">
+          <div class="setting-info">
+            <div class="setting-name">Show File Size</div>
+            <div class="setting-desc">Display size under each file name</div>
+          </div>
+          <label class="toggle">
+            <input type="checkbox" id="settingShowSize" checked onchange="saveSetting('showSize',this.checked);render()">
+            <div class="toggle-track"></div>
+          </label>
+        </div>
+      </div>
+
+      <div class="setting-group">
+        <div class="setting-group-title">Data</div>
+        <div class="settings-actions">
+          <button class="btn btn-secondary" style="justify-content:flex-start" onclick="backupData()">📦 &nbsp;Download Backup (all files included)</button>
+          <button class="btn btn-secondary" style="justify-content:flex-start" onclick="document.getElementById('restoreInput').click()">♻️ &nbsp;Restore from Backup</button>
+          <button class="btn btn-danger" style="justify-content:flex-start" onclick="clearAllData()">🗑️ &nbsp;Clear All Data</button>
+        </div>
+        <input type="file" id="restoreInput" accept=".json" style="display:none" onchange="restoreData(event)">
+      </div>
+
+      <div class="setting-group">
+        <div class="setting-group-title">About</div>
+        <div class="setting-row">
+          <div class="setting-info">
+            <div class="setting-name">AppLedger</div>
+            <div class="setting-desc">All data stored locally on your device. No internet required.</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<div class="toast-container" id="toastContainer"></div>
+
+<script>
+let accounts = [];
+let editingId = null;
+
+const SETTINGS_KEY = 'appLedgerSettings';
+const DATA_KEY = 'gmailTrackerAccounts';
+
+function getSetting(k, def) {
+  const raw = localStorage.getItem(SETTINGS_KEY);
+  const obj = raw ? JSON.parse(raw) : {};
+  return k in obj ? obj[k] : def;
+}
+function saveSetting(k, v) {
+  const raw = localStorage.getItem(SETTINGS_KEY);
+  const obj = raw ? JSON.parse(raw) : {};
+  obj[k] = v;
+  localStorage.setItem(SETTINGS_KEY, JSON.stringify(obj));
+}
+
+function init() {
+  const raw = localStorage.getItem(DATA_KEY);
+  if (raw) { try { accounts = JSON.parse(raw); } catch(e) { accounts = []; } }
+
+  // Theme
+  const theme = getSetting('theme', 'light');
+  applyTheme(theme);
+
+  // Settings toggles
+  document.getElementById('settingDark').checked = theme === 'dark';
+  document.getElementById('settingNewestFirst').checked = getSetting('newestFirst', true);
+  document.getElementById('settingShowSize').checked = getSetting('showSize', true);
+  document.getElementById('settingCompact').checked = getSetting('compact', false);
+  applyCompact();
+
+  render();
+}
+
+function save() { localStorage.setItem(DATA_KEY, JSON.stringify(accounts)); }
+
+/* THEME */
+function applyTheme(t) {
+  document.documentElement.setAttribute('data-theme', t);
+  document.getElementById('themeBtn').textContent = t === 'dark' ? '☀️' : '🌙';
+  saveSetting('theme', t);
+}
+function toggleTheme() {
+  const cur = document.documentElement.getAttribute('data-theme');
+  const next = cur === 'dark' ? 'light' : 'dark';
+  applyTheme(next);
+  document.getElementById('settingDark').checked = next === 'dark';
+}
+function toggleThemeFromSettings() {
+  const dark = document.getElementById('settingDark').checked;
+  applyTheme(dark ? 'dark' : 'light');
+}
+function applyCompact() {
+  const on = document.getElementById('settingCompact').checked;
+  saveSetting('compact', on);
+  document.body.style.setProperty('--compact', on ? '1' : '0');
+  document.querySelectorAll('.card-top').forEach(el => {
+    el.style.padding = on ? '10px 12px 8px' : '';
+  });
+  render();
+}
+
+/* SETTINGS */
+function openSettings() { document.getElementById('settingsPanel').classList.add('open'); }
+function closeSettings() { document.getElementById('settingsPanel').classList.remove('open'); }
+document.getElementById('settingsPanel').addEventListener('click', e => {
+  if (e.target === document.getElementById('settingsPanel')) closeSettings();
+});
+
+/* RENDER */
+function getFileIcon(name) {
+  const ext = (name.split('.').pop()||'').toLowerCase();
+  const m = {pdf:'📄',png:'🖼️',jpg:'🖼️',jpeg:'🖼️',gif:'🖼️',webp:'🖼️',svg:'🖼️',
+    mp4:'🎬',mov:'🎬',avi:'🎬',mkv:'🎬',mp3:'🎵',wav:'🎵',aac:'🎵',
+    doc:'📝',docx:'📝',xls:'📊',xlsx:'📊',ppt:'📊',pptx:'📊',
+    zip:'🗜️',rar:'🗜️','7z':'🗜️',txt:'📃',csv:'📊',json:'📋',
+    html:'🌐',htm:'🌐',js:'💻',py:'💻',apk:'📱'};
+  return m[ext] || '📎';
+}
+function fmtSize(b) {
+  if (b<1024) return b+' B';
+  if (b<1048576) return (b/1024).toFixed(1)+' KB';
+  return (b/1048576).toFixed(1)+' MB';
+}
+function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+function render(filter='') {
+  const list = document.getElementById('accountsList');
+  const f = filter.toLowerCase();
+  const showSize = getSetting('showSize', true);
+  const newestFirst = getSetting('newestFirst', true);
+  const compact = getSetting('compact', false);
+
+  const visible = accounts.filter(a =>
+    a.gmail.toLowerCase().includes(f) || a.app.toLowerCase().includes(f)
+  );
+  document.getElementById('countBadge').textContent = accounts.length;
+
+  if (accounts.length === 0) {
+    list.innerHTML = `<div class="empty-state"><div class="empty-icon">📭</div><h3>No accounts yet</h3><p>Tap "+ Add" to start tracking your Gmail accounts.</p></div>`;
+    return;
+  }
+  if (visible.length === 0) {
+    list.innerHTML = `<div class="empty-state"><div class="empty-icon">🔍</div><h3>No results</h3><p>Try a different search term.</p></div>`;
+    return;
+  }
+
+  list.innerHTML = visible.map(a => {
+    const realIdx = accounts.findIndex(x => x.id === a.id);
+    let files = [...(a.files||[])];
+    if (newestFirst) files = files.reverse();
+
+    const pad = compact ? '10px 12px 8px' : '14px 14px 12px';
+
+    return `<div class="card" id="card-${a.id}">
+      <div class="card-top" style="padding:${pad}" onclick="toggleCard('${a.id}')">
+        <div class="card-row1">
+          <div class="card-sno">#${realIdx+1}</div>
+          <div class="card-actions" onclick="event.stopPropagation()">
+            <button class="btn btn-secondary btn-sm" onclick="openEditModal('${a.id}')">✏️ Edit</button>
+            <button class="btn btn-danger btn-sm" onclick="deleteAccount('${a.id}')">🗑️</button>
+          </div>
+          <span class="card-chevron">▼</span>
+        </div>
+        <div class="card-info-grid">
+          <div class="info-cell">
+            <div class="info-label">Gmail</div>
+            <div class="info-value gmail-val">${esc(a.gmail)}</div>
+          </div>
+          <div class="info-cell">
+            <div class="info-label">App</div>
+            <div class="info-value app-val">${esc(a.app)}</div>
+          </div>
+        </div>
+        ${a.time ? `<div class="online-badge"><div class="online-dot"></div>Online at ${esc(a.time)} ${esc(a.ampm)}</div>` : ''}
+        ${a.notes ? `<div style="margin-top:8px;font-size:12px;color:var(--text-secondary);background:var(--surface2);border-radius:8px;padding:7px 10px">${esc(a.notes)}</div>` : ''}
+      </div>
+      <div class="card-body">
+        <div class="files-title">📎 Files (${(a.files||[]).length})</div>
+        ${files.length > 0 ? `<div class="files-list">${files.map(f=>`
+          <div class="file-item">
+            <div class="file-icon">${getFileIcon(f.name)}</div>
+            <div class="file-info">
+              <div class="file-name">${esc(f.name)}</div>
+              ${showSize ? `<div class="file-meta">${fmtSize(f.size)} · ${esc(f.date)}</div>` : ''}
+            </div>
+            <div class="file-btns">
+              <button class="file-btn dl" onclick="downloadFile('${a.id}','${f.id}')" title="Download">⬇️</button>
+              <button class="file-btn del" onclick="deleteFile('${a.id}','${f.id}')" title="Delete">✕</button>
+            </div>
+          </div>`).join('')}</div>` : `<p style="font-size:13px;color:var(--text-muted);margin-bottom:10px">No files yet.</p>`}
+        <label class="upload-zone" id="uz-${a.id}"
+          ondragover="event.preventDefault();this.classList.add('drag-over')"
+          ondragleave="this.classList.remove('drag-over')"
+          ondrop="handleDrop(event,'${a.id}')">
+          <input type="file" multiple onchange="handleFileInput(event,'${a.id}')">
+          <div class="upload-icon">☁️</div>
+          <div>Drop files here or <strong>tap to upload</strong></div>
+        </label>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function toggleCard(id) {
+  document.getElementById('card-'+id).classList.toggle('expanded');
+}
+function filterAccounts(v) { render(v); }
+
+/* MODAL */
+function openAddModal() {
+  editingId = null;
+  document.getElementById('modalTitle').textContent = 'Add Account';
+  ['fGmail','fApp','fTime','fNotes'].forEach(id => document.getElementById(id).value='');
+  document.getElementById('fAmPm').value = 'AM';
+  document.getElementById('modal').classList.add('open');
+  setTimeout(()=>document.getElementById('fGmail').focus(), 120);
+}
+function openEditModal(id) {
+  const a = accounts.find(x=>x.id===id);
+  if (!a) return;
+  editingId = id;
+  document.getElementById('modalTitle').textContent = 'Edit Account';
+  document.getElementById('fGmail').value = a.gmail;
+  document.getElementById('fApp').value = a.app;
+  document.getElementById('fTime').value = a.time||'';
+  document.getElementById('fAmPm').value = a.ampm||'AM';
+  document.getElementById('fNotes').value = a.notes||'';
+  document.getElementById('modal').classList.add('open');
+  setTimeout(()=>document.getElementById('fGmail').focus(), 120);
+}
+function closeModal() {
+  document.getElementById('modal').classList.remove('open');
+  editingId = null;
+}
+document.getElementById('modal').addEventListener('click', e=>{
+  if (e.target===document.getElementById('modal')) closeModal();
+});
+
+function saveAccount() {
+  const gmail = document.getElementById('fGmail').value.trim();
+  const app = document.getElementById('fApp').value.trim();
+  const time = document.getElementById('fTime').value.trim();
+  const ampm = document.getElementById('fAmPm').value;
+  const notes = document.getElementById('fNotes').value.trim();
+  if (!gmail) { toast('Enter a Gmail address.','error'); return; }
+  if (!app) { toast('Enter an app name.','error'); return; }
+  if (editingId) {
+    const idx = accounts.findIndex(x=>x.id===editingId);
+    if (idx>-1) accounts[idx] = {...accounts[idx], gmail, app, time, ampm, notes};
+    toast('Account updated!','success');
+  } else {
+    accounts.push({id:uid(), gmail, app, time, ampm, notes, files:[]});
+    toast('Account added!','success');
+  }
+  save();
+  render(document.getElementById('searchInput').value);
+  closeModal();
+}
+function deleteAccount(id) {
+  if (!confirm('Delete this account and all its files?')) return;
+  accounts = accounts.filter(x=>x.id!==id);
+  save(); render(document.getElementById('searchInput').value);
+  toast('Account deleted.','info');
+}
+
+/* FILES — newest first: unshift instead of push */
+function handleFileInput(e, aid) { addFiles(aid, Array.from(e.target.files)); e.target.value=''; }
+function handleDrop(e, aid) {
+  e.preventDefault();
+  document.getElementById('uz-'+aid).classList.remove('drag-over');
+  addFiles(aid, Array.from(e.dataTransfer.files));
+}
+function addFiles(accountId, files) {
+  const account = accounts.find(a=>a.id===accountId);
+  if (!account) return;
+  if (!account.files) account.files = [];
+  let done = 0;
+  files.forEach(file => {
+    const reader = new FileReader();
+    reader.onload = e2 => {
+      // unshift so newest is stored first (index 0)
+      account.files.unshift({
+        id: uid(),
+        name: file.name,
+        size: file.size,
+        type: file.type,
+        date: new Date().toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}),
+        data: e2.target.result
+      });
+      if (++done === files.length) {
+        save();
+        render(document.getElementById('searchInput').value);
+        setTimeout(()=>{
+          const card = document.getElementById('card-'+accountId);
+          if (card && !card.classList.contains('expanded')) card.classList.add('expanded');
+        },50);
+        toast(`${files.length} file${files.length>1?'s':''} uploaded!`,'success');
+      }
+    };
+    reader.readAsDataURL(file);
+  });
+}
+function downloadFile(aid, fid) {
+  const a = accounts.find(x=>x.id===aid);
+  if (!a) return;
+  const f = (a.files||[]).find(x=>x.id===fid);
+  if (!f||!f.data) return toast('File not found.','error');
+  const el = document.createElement('a');
+  el.href = f.data; el.download = f.name; el.click();
+}
+function deleteFile(aid, fid) {
+  const a = accounts.find(x=>x.id===aid);
+  if (!a) return;
+  a.files = (a.files||[]).filter(x=>x.id!==fid);
+  save();
+  render(document.getElementById('searchInput').value);
+  setTimeout(()=>{ const c=document.getElementById('card-'+aid); if(c) c.classList.add('expanded'); },50);
+  toast('File removed.','info');
+}
+
+/* BACKUP / RESTORE */
+function backupData() {
+  const payload = {version:2, exported:new Date().toISOString(), accounts};
+  const blob = new Blob([JSON.stringify(payload,null,2)],{type:'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href=url; a.download=`appledger-backup-${new Date().toISOString().slice(0,10)}.json`; a.click();
+  URL.revokeObjectURL(url);
+  toast('Backup downloaded — all files included!','success');
+}
+function restoreData(e) {
+  const file = e.target.files[0]; if (!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    try {
+      const payload = JSON.parse(ev.target.result);
+      const incoming = payload.accounts || payload;
+      if (!Array.isArray(incoming)) throw new Error('bad');
+      if (!confirm(`Restore ${incoming.length} account(s)? New accounts will be merged in.`)) return;
+      const ids = new Set(accounts.map(a=>a.id));
+      let added = 0;
+      incoming.forEach(a=>{ if (!ids.has(a.id)) { accounts.push(a); added++; } });
+      save(); render();
+      toast(`Restored! ${added} new account(s) added.`,'success');
+    } catch { toast('Invalid backup file.','error'); }
+  };
+  reader.readAsText(file);
+  e.target.value='';
+}
+function clearAllData() {
+  if (!confirm('Delete ALL accounts and files? This cannot be undone.')) return;
+  accounts = [];
+  save(); render();
+  closeSettings();
+  toast('All data cleared.','info');
+}
+
+/* UTILS */
+function uid() { return Date.now().toString(36)+Math.random().toString(36).slice(2,7); }
+function toast(msg, type='info') {
+  const c = document.getElementById('toastContainer');
+  const el = document.createElement('div');
+  el.className = 'toast '+type;
+  el.innerHTML = `<span>${{success:'✅',error:'❌',info:'ℹ️'}[type]||''}</span> ${msg}`;
+  c.appendChild(el);
+  setTimeout(()=>el.remove(), 3000);
+}
+
+document.addEventListener('keydown', e=>{
+  if (e.key==='Escape') { closeModal(); closeSettings(); }
+});
+
+init();
+</script>
+</body>
+</html>
